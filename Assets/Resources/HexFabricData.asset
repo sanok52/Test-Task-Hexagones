@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4edba8f051308c7419bdc071233752e8, type: 3}
+  m_Name: HexFabricData
+  m_EditorClassIdentifier: 
+  HexObjectPref: {fileID: 9141752220288352891, guid: fcd2974f687335b47ba9b45731c09192, type: 3}
+  FxDestroy: {fileID: 1749342555170241404, guid: ab1f2dc7eeb0be141b1a387128221846, type: 3}
+  ScaleCameraShake: {x: 0.3, y: 0.3, z: 0}
+  DestroySFX:
+    ID: Destroy
+    clip: {fileID: 8300000, guid: b7b21f9a60172844dbf194c6b25f40dd, type: 3}
+    volume: 0.5
+    pitch: 1.5

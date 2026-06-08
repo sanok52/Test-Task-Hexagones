@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8d8d997998feb54e85d795bf0a0ae95, type: 3}
+  m_Name: SoundEffectsData
+  m_EditorClassIdentifier: 
+  DestroySFX:
+    ID: Destory
+    clip: {fileID: 8300000, guid: b7b21f9a60172844dbf194c6b25f40dd, type: 3}
+    volume: 0.7
+    pitch: 0.7
+  StuckSFX:
+    ID: 
+    clip: {fileID: 8300000, guid: 81652031b64c342cc8dbc59c138d77c5, type: 3}
+    volume: 1
+    pitch: 0.7
+  ByOneSFX:
+    ID: 
+    clip: {fileID: 8300000, guid: ffb159a21c8a04135a5616979c828fab, type: 3}
+    volume: 1
+    pitch: 1
+  DeliteHexSFX:
+    ID: 
+    clip: {fileID: 8300000, guid: 130a177e727814a2ea78a886ab72213d, type: 3}
+    volume: 0.7
+    pitch: 1.2
