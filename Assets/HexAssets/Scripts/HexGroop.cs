@@ -13,6 +13,7 @@ public class HexGroop : MonoBehaviour, IGrabObject
 
     [Space]
     [SerializeField] private float hexOffset = 0.2f;
+    [SerializeField] private float startHexOffset = 0.2f;
     [SerializeField] private float hexesOffsetGrab = 1f;
 
     private List<HexObject> hexObjects = new List<HexObject>();
@@ -29,7 +30,7 @@ public class HexGroop : MonoBehaviour, IGrabObject
     public float DelayHexMove => delayHexMove;
 
     public HexGroopPlace Place => place;
-    public HexColor HexColor => (hexObjects.Count == 0 ? HexColor.None : hexObjects[hexObjects.Count - 1].HexColor);
+    public HexColor HexColor => (hexObjects.Count == 0 ? HexColor.None : hexObjects[hexObjects.Count - 1].Color);
 
     public bool IsPlayAnimations => hexObjects.Any(x => x.IsPlayAnimation);
     public bool IsBlock { get; private set; }
@@ -92,6 +93,14 @@ public class HexGroop : MonoBehaviour, IGrabObject
         }
     }
 
+    public void SetColorsByOne (params HexColor[] hexColors)
+    {
+        for (int i = 0; i < hexColors.Length && i < hexObjects.Count; i++)
+        {
+            hexObjects[i].SetColor(hexColors[i]);
+        }
+    }
+
     public void Drop(Vector3 position)
     {
     }
@@ -146,7 +155,7 @@ public class HexGroop : MonoBehaviour, IGrabObject
 
     public Vector3 GetHexPosition(int index)
     {
-        return transform.position + (Vector3.up * index * hexOffset) + (isGrab ? (Vector3.up * hexesOffsetGrab) : Vector3.zero);
+        return transform.position + (Vector3.up * startHexOffset) + (Vector3.up * index * hexOffset) + (isGrab ? (Vector3.up * hexesOffsetGrab) : Vector3.zero);
     }
 
     public HexObject GetHex(int index)
@@ -216,7 +225,7 @@ public class HexGroop : MonoBehaviour, IGrabObject
         IsBlock = isBlock;
     }
 
-    public void UpdateHexCount(int count)
+    public void SetHexCount(int count)
     {
         foreach (var item in hexObjects)
         {

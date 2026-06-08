@@ -10,8 +10,14 @@ public class PlayerTouchInput : MonoBehaviour, IPlayerInput
 
     private readonly HashSet<int> _activeTouchIds = new HashSet<int>();
 
+    private bool isActive = true;
+    public bool IsActive => isActive;
+
     private void Update()
     {
+        if (!IsActive)
+            return;
+
         for (int i = 0; i < Input.touchCount; i++)
         {
             Touch touch = Input.GetTouch(i);
@@ -36,5 +42,10 @@ public class PlayerTouchInput : MonoBehaviour, IPlayerInput
                     break;
             }
         }
+    }
+
+    public void SetActive(bool isActive)
+    {
+        this.isActive = isActive;
     }
 }

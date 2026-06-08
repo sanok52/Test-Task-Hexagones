@@ -1,1 +1,1 @@
-public enum HexColor { None, Red, Blue, Yellow };
+public enum HexColor { None, Red, Blue, Yellow, Purple, White, WhiteBlue, Green };

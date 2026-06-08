@@ -49,9 +49,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d549ddcc039aea74ab7828195fcc954e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  delayHexMove: 0.25
+  delayHexMove: 0.1
   durationMoveOnPlace: 0.2
-  hexOffset: 0.3
+  hexOffset: 0.2
+  startHexOffset: 0.3
   hexesOffsetGrab: 1
 --- !u!54 &8816456094629044546
 Rigidbody:
@@ -102,7 +103,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6667103193379135795, guid: fcd2974f687335b47ba9b45731c09192, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.232
       objectReference: {fileID: 0}
     - target: {fileID: 6667103193379135795, guid: fcd2974f687335b47ba9b45731c09192, type: 3}
       propertyPath: m_LocalPosition.z
@@ -164,7 +165,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6667103193379135795, guid: fcd2974f687335b47ba9b45731c09192, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.23200011
       objectReference: {fileID: 0}
     - target: {fileID: 6667103193379135795, guid: fcd2974f687335b47ba9b45731c09192, type: 3}
       propertyPath: m_LocalPosition.z
@@ -226,7 +227,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6667103193379135795, guid: fcd2974f687335b47ba9b45731c09192, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.23200011
       objectReference: {fileID: 0}
     - target: {fileID: 6667103193379135795, guid: fcd2974f687335b47ba9b45731c09192, type: 3}
       propertyPath: m_LocalPosition.z
@@ -288,7 +289,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6667103193379135795, guid: fcd2974f687335b47ba9b45731c09192, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.23200011
       objectReference: {fileID: 0}
     - target: {fileID: 6667103193379135795, guid: fcd2974f687335b47ba9b45731c09192, type: 3}
       propertyPath: m_LocalPosition.z

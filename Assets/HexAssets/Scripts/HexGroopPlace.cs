@@ -54,6 +54,8 @@ public class HexGroopPlace : MonoBehaviour
 
         mainHexGroop.OnCountChange += (groop) => OnCountChange?.Invoke(this);
         mainHexGroop.OnGroopReturn += (groop) => OnMainGroopReturn?.Invoke(this);
+
+        UpdateHexCount();
     }
 
     public bool CanDrop(IGrabObject currentGrab, bool dropIfCan = false)
@@ -67,7 +69,7 @@ public class HexGroopPlace : MonoBehaviour
 
     public bool CanDrop(HexGroop groop, bool dropIfCan = false)
     {
-        bool result = true; //hexColor == HexColor.None || hexColor == groop.HexColor;
+        bool result = true; //hexColor == Color.None || hexColor == groop.Color;
         if (result && dropIfCan)
             DropOnMe(groop);
         return result;
@@ -107,8 +109,11 @@ public class HexGroopPlace : MonoBehaviour
         else
             yield return StuckTwoGroopsRoutine(groopOut);
 
-        yield return new WaitWhile(() => groopOut.IsPlayAnimations);
-        yield return new WaitWhile(() => mainHexGroop.IsPlayAnimations);
+        if (!byOne)
+        {
+            yield return new WaitWhile(() => groopOut.IsPlayAnimations);
+            yield return new WaitWhile(() => mainHexGroop.IsPlayAnimations);
+        }
 
         groopOut.Delite();
 
@@ -123,7 +128,9 @@ public class HexGroopPlace : MonoBehaviour
         groopOut.MoveUpperHexAnimation(mainHexGroop.GetHexPosition(mainHexGroop.Count), coefSpeed);
         mainHexGroop.AddHexWithoutAnimation(groopOut.GetHex(groopOut.Count - 1));
         groopOut.RemoveHexWithoutAnimation(groopOut.Count - 1);
+
         yield return new WaitForSeconds(mainHexGroop.DelayHexMove / coefSpeed);
+
         HexSoundManager.PlayByOneSFX();
     }
 
@@ -146,10 +153,21 @@ public class HexGroopPlace : MonoBehaviour
         yield return mainHexGroop.OverfulHexPlaceRoutine();
     }
 
-    public void UpdateHexCount(int middleCount)
+    public void SetHexCount(int middleCount, bool isUpdate = true)
     {
-        MainHexGroop.UpdateHexCount(middleCount);
+        MainHexGroop.SetHexCount(middleCount);
+        if(isUpdate)
+            UpdateHexCount();
+    }
 
+    public void UpdateHexCount()
+    {
         StartCoroutine(MainHexGroop.CreateAinmtionRoutine());
+    }
+
+    public void InitPreset(HexGroopPreset preset)
+    {
+        SetHexCount(preset.colors.Length);
+        MainHexGroop.SetColorsByOne(preset.colors);
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
@@ -14,6 +15,7 @@ public class GameFlow : MonoBehaviour
     private List<HexGroopPlace> hexNeedRections = new List<HexGroopPlace>();
 
     private List<(HexGroopPlace, HexGroopPlace)> hexReactions = new List<(HexGroopPlace, HexGroopPlace)>();
+    private List<HexGroopPreset> startPresets = new List<HexGroopPreset>();
 
     private HexColorRandomizer randomizer;
 
@@ -21,6 +23,8 @@ public class GameFlow : MonoBehaviour
     private float accelerationHexFlip => 30f;
     private float coefHexByOneMax = 3f;
     private float coefHexByOne => 1f + (accelerationHexFlip / 100f);
+
+    public bool IsReaction => hexReactions.Count > 0;
 
     public void Init(HexGroopPlace[] places)
     {
@@ -36,12 +40,24 @@ public class GameFlow : MonoBehaviour
                 simpleHexGroopPlaces.Add(place);
             place.OnDropAnMeEnd += HexPlaceReaction;
         }
+
+        randomizer = new HexColorRandomizer(2);
+        startPresets = new List<HexGroopPreset>(G.GameRuleData.startHexes);
     }
 
     private void Start()
     {
-        InitHexes(150, hexGroopPlaces.Count / 4);
-        InitColors();
+        //InitHexes(150, hexGroopPlaces.Count / 4);
+        //InitColors();
+        InitHexSelf();
+    }
+
+    private void InitHexSelf()
+    {
+        foreach (var hexPlace in hexGroopPlaces)
+        {
+            hexPlace.UpdateHexCount();
+        }
     }
 
     private void PlaceStartGroopReturnWork(HexGroopPlace place)
@@ -49,9 +65,20 @@ public class GameFlow : MonoBehaviour
         if (startHexGroopPlaces.Any(x => x.CountHexObjects != 0))
             return;
 
+        StartPlacesUpdate();
+    }
+
+    private void StartPlacesUpdate()
+    {
         foreach (var splace in startHexGroopPlaces)
         {
-            splace.UpdateHexCount(3);
+            if (startPresets.Count > 0)
+            {
+                splace.InitPreset(startPresets[0]);
+                startPresets.RemoveAt(0);
+                continue;
+            }
+            splace.SetHexCount(5);
             splace.MainHexGroop.SetColors(randomizer.GetRandomColor());
         }
     }
@@ -120,7 +147,7 @@ public class GameFlow : MonoBehaviour
         // Ќазначение стартовым местам
         foreach (var place in startPlaces)
         {
-            place.UpdateHexCount(avgPerPlace);
+            place.SetHexCount(avgPerPlace);
         }
 
         // ѕеремешиваем простые места, чтобы пустые распределились случайно
@@ -135,14 +162,14 @@ public class GameFlow : MonoBehaviour
         for (int i = 0; i < shuffledSimple.Count; i++)
         {
             if (i < emptyPlaces)
-                shuffledSimple[i].UpdateHexCount(0);
+                shuffledSimple[i].SetHexCount(0);
             else
             {
                 int amountIndex = i - emptyPlaces;
                 if (amountIndex < simpleAmounts.Count)
-                    shuffledSimple[i].UpdateHexCount(simpleAmounts[amountIndex]);
+                    shuffledSimple[i].SetHexCount(simpleAmounts[amountIndex]);
                 else
-                    shuffledSimple[i].UpdateHexCount(0);
+                    shuffledSimple[i].SetHexCount(0);
             }
         }
     }
@@ -189,7 +216,7 @@ public class GameFlow : MonoBehaviour
         if (validNeighs.Length != 0)
             StartCoroutine(HexReactionRoutine(hexPlace, validNeighs));
         else
-            return false;
+            return false;        
 
         return true;
     }
@@ -197,8 +224,8 @@ public class GameFlow : MonoBehaviour
     private IEnumerator HexReactionRoutine(HexGroopPlace hexPlace, HexGroopPlace[] validNeighs)
     {
         HexGroopPlace target = validNeighs
-            .OrderBy(x => x.CountHexObjects)
-            .First();
+            .OrderBy(x => -x.CountHexObjects)
+            .First();       
 
         countHexMove++;
 
@@ -217,25 +244,48 @@ public class GameFlow : MonoBehaviour
 
         bool testAgain = UpdateBoard(hexPlace);
         bool testNext = UpdateBoard(target);
-        if (hexReactions.Count == 0 && !testAgain && !testNext)        
-            EndAllReactionsWork();        
+
+        Debug.Log($"{hexReactions.Count == 0} && {!testAgain} && {!testNext}");
+
+        if (hexReactions.Count == 0 && !testAgain && !testNext)
+            EndAllReactionsWork();
+    }
+
+    private static bool TestOverfull(HexGroopPlace hexPlace)
+    {
+        return hexPlace.CountHexObjects >= 10 &&
+                    hexPlace.MainHexGroop.HexObjects.All(x => x.Color == hexPlace.UpperHexColor);
     }
 
     private void EndAllReactionsWork()
     {
+        if (isEndGame)
+            return;
+
         countHexMove = 0;
 
+        bool isWin = true;
         foreach (var place in simpleHexGroopPlaces)
         {
-            if (place.CountHexObjects != 0 && !place.MainHexGroop.HexObjects.All(x => x.HexColor == place.UpperHexColor))
-                return;
+            if (TestOverfull(place))
+            {
+                StartCoroutine(OverfulHexPlaceRoutine(place));
+            }
+
+            if (place.CountHexObjects != 0)// && !place.MainHexGroop.HexObjects.All(x => x.Color == place.UpperHexColor))
+                isWin = false;
         }
 
-        StartCoroutine(EndGameRountine());
+        if (!isWin)
+            return;
+
+        StartCoroutine(WinGameRountine());
     }
 
-    private IEnumerator EndGameRountine()
+    private IEnumerator WinGameRountine()
     {
+        isEndGame = true;
+
         foreach (var place in hexGroopPlaces)
         {
             StartCoroutine(place.OverfulHexPlaceRoutine());
@@ -246,6 +296,50 @@ public class GameFlow : MonoBehaviour
         EntryPoint.EndGame();
     }
 
+    private IEnumerator LoseGameRountine()
+    {
+        isEndGame = true;
+        G.PlayerInput.SetActive(false);
+
+        Debug.Log("Fail");
+        yield return FindFirstObjectByType<FailAnimation>().Play();
+        EntryPoint.EndGame();
+    }
+
+    bool isEndGame = false;
+    float timeInGame = 0f;
+
+    private void Update()
+    {
+        if (isEndGame)
+            return;
+
+        if (!isEndGame && TestLose())
+        {
+            StartCoroutine(LoseGameRountine());
+        }
+
+        timeInGame += Time.deltaTime;
+        G.TimeBar.UpdateTimeProgerss(1f - (timeInGame / G.GameRuleData.GameTimer));
+
+        if (timeInGame >= G.GameRuleData.GameTimer)
+            StartCoroutine(LoseGameRountine());
+    }
+
+    private bool TestLose()
+    {
+        if (hexReactions.Count > 0)
+            return false;
+
+        foreach (var place in simpleHexGroopPlaces)
+        {
+            if (place.CountHexObjects == 0)
+                return false;
+        }
+
+        return true;
+    }
+
     private IEnumerator PlaceMixedHexRoutine(HexGroopPlace place, HexGroopPlace target)
     {
         if (place.CountHexObjects > target.CountHexObjects)
@@ -253,37 +347,44 @@ public class GameFlow : MonoBehaviour
         else
             yield return HexMoveByOneWhileColor(target, place, target.UpperHexColor);
 
+        yield return new WaitForSeconds(1f / GetCoefSpeed());
+
         if (place.CountHexObjects == 0 || target.CountHexObjects == 0)
             yield break;
     }
 
     private IEnumerator HexMoveByOneWhileColor(HexGroopPlace hexOut, HexGroopPlace hexIn, HexColor hexColor)
     {
-        //if (hexReactions.Any(x => x.Item1 == hexOut && x.Item2 == hexIn))
-        //    yield break;
-        //if (hexReactions.Any(x => x.Item1 == hexIn && x.Item2 == hexOut && x.Item3 == hexColor))
-        //    yield break;
-
         while (hexOut.UpperHexColor == hexColor)
         {
             yield return HexMoveByOneRoutine(hexOut, hexIn);
-            if (hexIn.MainHexGroop.HexObjects.All(x => x.HexColor == hexColor) &&
-                hexIn.MainHexGroop.HexObjects.Count(x => x.HexColor == hexColor) >= 10)
+            /*if (hexIn.MainHexGroop.HexObjects.All(x => x.Color == hexColor) &&
+                hexIn.MainHexGroop.HexObjects.Count(x => x.Color == hexColor) >= 10)
             {
                 yield return OverfulHexPlaceRoutine(hexIn);
                 yield break;
-            }
+            }*/
         }
     }
 
     private IEnumerator HexMoveByOneRoutine(HexGroopPlace hexOut, HexGroopPlace hexIn)
     {
-        yield return hexIn.MixedTwoGroopInMy(hexOut.MainHexGroop, true, Mathf.Clamp(1f * Mathf.Pow(coefHexByOne, countHexMove), 1f, coefHexByOneMax));
+        yield return hexIn.MixedTwoGroopInMy(hexOut.MainHexGroop, true, GetCoefSpeed());
+    }
+
+    private float GetCoefSpeed()
+    {
+        return Mathf.Clamp(1f * Mathf.Pow(coefHexByOne, countHexMove), 1f, coefHexByOneMax);
     }
 
     private IEnumerator OverfulHexPlaceRoutine(HexGroopPlace hexPlace)
     {
+        hexReactions.Add((hexPlace, hexPlace));
         yield return hexPlace.OverfulHexPlaceRoutine();
+        hexReactions.Remove((hexPlace, hexPlace));
+
+        if (hexNeedRections.Count == 0)
+            EndAllReactionsWork();
     }
 
     private HexGroopPlace[] GetNeighbors(HexGroopPlace place)

@@ -6,7 +6,8 @@ using UnityEngine;
 
 public class HexObject : MonoBehaviour
 {
-    private HexColor hexColor = HexColor.Red;
+    [SerializeField] private HexColor hexColor = HexColor.Red;
+    private HexColor lastColor = HexColor.None;
     private HexGroop myGroop;
 
     [Space]
@@ -22,13 +23,15 @@ public class HexObject : MonoBehaviour
     private Sequence sequenceMove;
     private bool isAnimation;
 
-    public HexColor HexColor => hexColor;
+    public HexColor Color => hexColor;
     public HexGroop MyGroop => myGroop;
     public bool IsPlayAnimation => isAnimation;
 
     private void Awake()
     {
-        //SetColor((HexColor)UnityEngine.Random.Range(1, 4));
+        //SetColor((Color)UnityEngine.Random.Range(1, 4));
+        if (lastColor == HexColor.None)
+            SetColor(hexColor);
     }
 
     public void SetGroop(HexGroop groop)
@@ -40,6 +43,7 @@ public class HexObject : MonoBehaviour
     {
         hexColor = color;
         hexVisual.SetColor(color);
+        lastColor = color;
     }
 
     public IEnumerator MoveStackRoutine(Vector3 position)
@@ -123,9 +127,9 @@ public class HexObject : MonoBehaviour
     {
         isAnimation = true;
 
-        transform.position = endPoint + (Vector3.up * 10) + (Vector3.up * hexOffset * 2.5f * index);
-
-        yield return transform.DOMove(endPoint, duration).SetEase(Ease.InSine).WaitForCompletion();
+        transform.position = endPoint;// + (Vector3.up * 10) + (Vector3.up * hexOffset * 2.5f * index);
+        transform.localScale = Vector3.zero;
+        yield return transform.DOScale(1f, duration);
 
         isAnimation = false;
     }

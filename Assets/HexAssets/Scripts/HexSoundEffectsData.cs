@@ -4,7 +4,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SoundEffectsData", menuName = "HexGame/SoundEffectsData")]
 public class HexSoundEffectsData : ScriptableObject
 {
-    internal static HexSoundEffectsData data;
     public AudioPlayData DestroySFX;
     public AudioPlayData StuckSFX;
     public AudioPlayData ByOneSFX;

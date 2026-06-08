@@ -15,6 +15,10 @@ public class TutorialAnimation : MonoBehaviour
     [SerializeField] private float durationMove = 2f;
     [SerializeField] private float durationPause = 1f;
 
+    [Space]
+    [SerializeField] private Transform firstStart;
+    [SerializeField] private Transform firstEnd;
+
     private List<HexGroopPlace> simplePlaces = new List<HexGroopPlace>();
     private List<HexGroopPlace> startPlaces = new List<HexGroopPlace>();
 
@@ -33,7 +37,7 @@ public class TutorialAnimation : MonoBehaviour
 
     private void Start()
     {
-       DOVirtual.DelayedCall(Time.deltaTime, () =>  RestartAnimation());
+       DOVirtual.DelayedCall(Time.deltaTime, () =>  RestartAnimationHand());
     }
 
     public void Init(HexGroopPlace[] places, IPlayerInput playerInput)
@@ -66,27 +70,47 @@ public class TutorialAnimation : MonoBehaviour
 
     private void Update()
     {
-        if (isPlayerHold)
+        if (isPlayerHold || G.GameFlow.IsReaction)
             return;
 
         timerHold += Time.deltaTime;
         if (timerHold > 5f && !isVisible)
         {
             SetVisible(true);
-            RestartAnimation();
+            RestartAnimationHand();
         }
     }
 
-    private void RestartAnimation()
+    private void RestartAnimationLine()
+    {
+
+    }
+
+    private void RestartAnimationHand()
     {
         sequence?.Kill();
 
         HexGroopPlace placeStart = startPlaces.FirstOrDefault(x => x.CountHexObjects > 0);
         HexGroopPlace placeTarget = simplePlaces.FirstOrDefault(x => x.CountHexObjects == 0);
 
+        if (placeStart == null || placeTarget == null)
+        {
+            SetVisible(false);
+            return;
+        }
+
+        Transform start = firstStart != null ? firstStart : placeStart.transform;
+        Transform end = firstEnd != null ? firstEnd : placeTarget.transform;
+
+        if(firstStart != null)
+        {
+            firstStart = null;
+            firstEnd = null;
+        }
+
         //Debug.Log($"{placeTarget.gameObject.name} {placeTarget.CountHexObjects}", placeTarget.gameObject);
 
-        if (placeStart == null || placeTarget == null)
+        if (start == null || end == null)
         {
             SetVisible(false);
             return;
@@ -95,8 +119,8 @@ public class TutorialAnimation : MonoBehaviour
         if (Camera.main == null || parentCanvas == null)
             return;
 
-        Vector2 screenStart = Camera.main.WorldToScreenPoint(placeStart.transform.position);
-        Vector2 screenTarget = Camera.main.WorldToScreenPoint(placeTarget.transform.position);// + (Vector3.forward * 0.5f));
+        Vector2 screenStart = Camera.main.WorldToScreenPoint(start.position);
+        Vector2 screenTarget = Camera.main.WorldToScreenPoint(end.position);// + (Vector3.forward * 0.5f));
 
         Vector2 realStart = GetLocalPositionInCanvas(screenStart);
         Vector2 realTarget = GetLocalPositionInCanvas(screenTarget);

@@ -71,11 +71,13 @@ public static class G
     public static GameFlow GameFlow;
     public static AudioSource SourceSFX;
     public static TutorialAnimation TutorialHand;
+    public static TimeBar TimeBar;
 
     public static HexGroopPlace[] AllPlaces;
 
     public static HexFabricData FabricData;
     public static HexSoundEffectsData SoundEffectsData;
+    public static HexGameRuleData GameRuleData;
 
     public static void Init()
     {
@@ -86,9 +88,11 @@ public static class G
 
         TutorialHand = Object.FindFirstObjectByType<TutorialAnimation>();
         AllPlaces = Object.FindObjectsByType<HexGroopPlace>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        TimeBar = Object.FindFirstObjectByType<TimeBar>();
 
         FabricData = Resources.Load<HexFabricData>("HexFabricData");
         SoundEffectsData = Resources.Load<HexSoundEffectsData>("SoundEffectsData");
+        GameRuleData = Resources.Load<HexGameRuleData>("HexGameRuleData");
     }
 
 }

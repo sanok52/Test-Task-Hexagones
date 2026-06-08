@@ -13,7 +13,7 @@ public class HexColorRandomizer
     {
     }
 
-    // Использовать первые 'colors' цветов (начиная с индекса 1), каждый по count раз
+    // Использовать первые 'imgColors' цветов (начиная с индекса 1), каждый по count раз
     public HexColorRandomizer(int colors, int count)
     {
         colorCount = colors;
