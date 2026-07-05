@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hexColor: 1
   stackDuration: 0.2
-  byOneDuration: 0.45
+  byOneDuration: 0.6
   byOneUpDist: 2
   ease: 1
   hexVisual: {fileID: 3215659530084795591}

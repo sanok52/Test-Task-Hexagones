@@ -1271,7 +1271,7 @@ MonoBehaviour:
   _usedByLunaBuild: []
   _includedShaderVariants: []
   _excludedShaderVariants: []
-  version: 511
+  version: 594
   _shaderParsedShaders:
   - ParsedSubShaders:
     - Index: 0

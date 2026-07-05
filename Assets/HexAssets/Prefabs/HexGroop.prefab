@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d549ddcc039aea74ab7828195fcc954e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  delayHexMove: 0.1
+  delayHexMove: 0.12
   durationMoveOnPlace: 0.2
   hexOffset: 0.2
   startHexOffset: 0.3
